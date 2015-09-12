@@ -94,7 +94,7 @@ def main(busca,num):
 if __name__ == "__main__":
         
         total = len(sys.argv)
-        print(total)
+#        print(total)
         if total == 3:
                 arg1 = str(sys.argv[1])
                 arg2 = int(str(sys.argv[2]))
@@ -107,10 +107,6 @@ if __name__ == "__main__":
                 arg2 = 1
         
         main(arg1, arg2)
+
+#        print(arg1,arg2)
         
-        print(arg1,arg2)
-        
-    
-
-
-
