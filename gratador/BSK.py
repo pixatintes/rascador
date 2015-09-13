@@ -4,9 +4,10 @@ __author__ = 'albert'
 import urllib.request
 import urllib.parse
 from bs4 import BeautifulSoup
-import sys
-import json
-import pickle
+import sys,json,pickle 
+import easygui as eg
+import webbrowser as web
+
 
 
 class Pagina:
@@ -20,13 +21,15 @@ class Pagina:
         :param path:
         :return:
         '''
-        self.urls = []       
-        self.post_link= []
+        self.pagines = []  
+        self.url_posts=[]
+        self.busqueda = ""     
+        self.trobat= []
         
 
         self.exp()
         
-        for link in self.post_link:
+        for link in self.trobat:
             print(link)
         
     
@@ -41,7 +44,7 @@ class Pagina:
 
     def get_urls(self,num=1, base='http://labsk.net/index.php?board=22.00'):
         
-        self.urls=[base]
+        self.pagines=[base]
         
         if num > 1:
             count=0
@@ -49,7 +52,7 @@ class Pagina:
             for i in range(num):
                     count = count + 20
                     url = 'http://labsk.net/index.php?board=22.' + str(count)
-                    self.urls.append(url)
+                    self.pagines.append(url)
         
 
         
@@ -93,33 +96,43 @@ class Pagina:
         return coincideix
     
     
-    def exp(self, nom='test.pickle'):
-        json={}
+    def exp(self, nom=None):
+        file = eg.filesavebox(msg="Guardar fitxer",
+                              title="exporta fitxer: laBSK")
         
-        json['urls']=self.urls
-        json['res']=self.post_link
-        file = "data/" + nom
+        if nom == None:
+            nom = ""+self.busqueda + ".obj"
         with open(file, mode='wb') as f:
             pickle.dump(self,f)
             
-    def imp(self, nom='test.pickle'):
-        file ="data/"+nom
+    def imp(self):
+        extension = ["*.obj"]
+ 
+        file = eg.fileopenbox(msg="Obrir fitxer",
+        title="importa fitxer: laBSK",
+        default='',
+        filetypes=extension)
+        
         with open(file, mode='rb') as f:
             imp=pickle.load(f)
         return imp    
+    def mostra(self):
+        for post in self.trobat:
+            web.open_new_tab(post)
     
     def posts(self, tag='td',attr_key='class', attr_value='subject lockedbg2'):
         '''
         agafa i retorna una llista amb els elements "html" i de classe donades
         '''
-        for url in self.urls:                                           #iterem en la llista de pagines per buscar tots els posts
+        for url in self.pagines:                                           #iterem en la llista de pagines per buscar tots els posts
 #            print(url)                                                    
             bs = self.__bs(self._aconsegueix(url))    #creem l'objecte __bs
             divs= self.__bs_busca(bs, tag, 'class', attr_value)             #busquem tots els 'tags' amb 'class' donades  
             for div in divs:                                            #iterem tag x tag
                     link = div.a['href']                                #busquem el link al post
-                    self.urls.append(link)                                  #guardem el link al la llista de posts
+                    self.url_posts.append(link)                                  #guardem el link al la llista de posts
 #                    print(link)        
+    
 
         
     
@@ -128,16 +141,16 @@ class Pagina:
         busca dins del post si hi han coincidencies i retorna una llista amb els links dels posts coincidents
         '''
         #creem la llista a tornar
-        
-        posts = self.posts('td', 'subject lockedbg2')                   #busquem tots els posts
+        self.busqueda = busca
+        self.posts('td','class', 'subject lockedbg2')                   #busquem tots els posts
         #iterem tots els posts
-        for post in posts:
+        for post in self.url_posts:
             #creem un '__bs' per cada post
             bs=self.__bs(self._aconsegueix(post))
             
             llista=self.__bs_busca(bs, 'div', 'class', 'inner')         #busquem lelement on hi ha el text del post
             if self.__bs_busca_text(llista, busca):                      #si les te adjuntem el link del post a la llista
-                self.post_link.append(post)                          
+                self.trobat.append(post)                          
                                              
     
     
