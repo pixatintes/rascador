@@ -1,13 +1,16 @@
 
 __author__ = 'albert'
 
-import urllib.request
-import urllib.parse
+import urllib.request,sys,pickle,smtplib
 from bs4 import BeautifulSoup
-import sys,json,pickle 
-import easygui as eg
-import webbrowser as web
-
+import easygui as eg                #modul gui cridar i guardar fitxers
+import webbrowser as web            #obre navegador
+from email.mime.text import MIMEText#modul email
+import os
+import smtplib
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
 
 
 class Pagina:
@@ -27,7 +30,6 @@ class Pagina:
         self.trobat= []
         
 
-        self.exp()
         
         for link in self.trobat:
             print(link)
@@ -97,6 +99,9 @@ class Pagina:
     
     
     def exp(self, nom=None):
+        '''
+        exporta
+        '''
         file = eg.filesavebox(msg="Guardar fitxer",
                               title="exporta fitxer: laBSK")
         
@@ -106,6 +111,9 @@ class Pagina:
             pickle.dump(self,f)
             
     def imp(self):
+        '''
+        importa un objecte 
+        '''
         extension = ["*.obj"]
  
         file = eg.fileopenbox(msg="Obrir fitxer",
@@ -116,10 +124,59 @@ class Pagina:
         with open(file, mode='rb') as f:
             imp=pickle.load(f)
         return imp    
+    
     def mostra(self):
+        '''
+        obre una pestanya nova al navegador amb els posts trobats
+        '''
         for post in self.trobat:
             web.open_new_tab(post)
+            
+    def mail(self, desde=None, a=None):
+        '''
+        envia un correu electrònic amb els resutats trobats
+        '''
+        #configurar el mail
+        COMMASPACE = ', '
+        if desde==None:
+            sender = eg.textbox(msg="correu del gmail", text="")
+        else:
+            sender=desde
+        gmail_password = eg.passwordbox(msg="Entra la teva contrasenya", title="Password")
+        if a == None:
+            recipients = eg.textbox(msg="enviar a:", text="")
+        else:
+            recipients = a
+            
+            
+        # Create the enclosing (outer) message
+        
+        cos = "S'han trobat els seguents links: \n"
+        for link in self.trobat:
+            cos = cos + link +'\n'
+        outer=MIMEText(cos)
+        outer['Subject'] = "posts trobats a laBSK de3l joc {} " .format(self.busqueda)
+        outer['To'] = COMMASPACE.join(recipients)
+        outer['From'] = sender
+        
+        composed = outer.as_string()
     
+        # Send the email
+        try:
+            with smtplib.SMTP('smtp.gmail.com', 587) as s:
+                s.ehlo()
+                s.starttls()
+                s.ehlo()
+                s.login(sender, gmail_password)
+                s.sendmail(sender, recipients, composed)
+                s.close()
+            print("Email sent!")
+        except:
+            print("Unable to send the email. Error: ", sys.exc_info()[0])
+            raise
+            
+        
+        
     def posts(self, tag='td',attr_key='class', attr_value='subject lockedbg2'):
         '''
         agafa i retorna una llista amb els elements "html" i de classe donades
@@ -148,9 +205,10 @@ class Pagina:
             #creem un '__bs' per cada post
             bs=self.__bs(self._aconsegueix(post))
             
-            llista=self.__bs_busca(bs, 'div', 'class', 'inner')         #busquem lelement on hi ha el text del post
-            if self.__bs_busca_text(llista, busca):                      #si les te adjuntem el link del post a la llista
-                self.trobat.append(post)                          
+            llista=self.__bs_busca(bs, 'div', 'class', 'inner')         
+            if self.__bs_busca_text(llista, busca):                     #busquem lelement on hi ha el text del post
+                if post not in self.trobat:                             #si no està guardat
+                    self.trobat.append(post)                           #l'adjuntem el link del post a la llista
                                              
     
     
