@@ -20,27 +20,27 @@ class Pagina:
         :param path:
         :return:
         '''
-        self.urls = ['http://labsk.net/index.php?board=22.00']
+        self.pagines = ['http://labsk.net/index.php?board=22.00']
         count=0
         if num > 1:
                 for i in range(num):
                         count = count + 20
                         url = 'http://labsk.net/index.php?board=22.' + str(count)
-                        self.urls.append(url)
+                        self.pagines.append(url)
 
        
 #        self.direccio = direccio
-#        self.pagina = self.aconsegueix(self.direccio)
-        self.post_link= self.buscar(busca)
+#        self.pagina = self._aconsegueix(self.direccio)
+        self.trobat= self.buscar(busca)
 
         
         
-        for link in self.post_link:
+        for link in self.trobat:
             print(link)
 
-    def aconsegueix(self, direccio):
+    def _aconsegueix(self, direccio):
         '''
-        aconsegueix la pagina
+        _aconsegueix la pagina
         :return:
         '''
         with urllib.request.urlopen(direccio) as resposta:              #crida una pagina
@@ -69,14 +69,14 @@ class Pagina:
     
     
     
-    def posts(self, tag='td',attr_key='class', attr_value='subject lockedbg2'):
+    def posts(self,num=1 tag='td',attr_key='class', attr_value='subject lockedbg2'):
         '''
         agafa i retorna una llista amb els elements "html" i de classe donades
         '''
         posts =[]                                                       #creem la llista a tornar
-        for url in self.urls:                                           #iterem en la llista de pagines per buscar tots els posts
+        for url in self.pagines:                                           #iterem en la llista de pagines per buscar tots els posts
 #            print(url)                                                    
-            bs = self.__bs(self.aconsegueix(url))    #creem l'objecte __bs
+            bs = self.__bs(self._aconsegueix(url))    #creem l'objecte __bs
             divs= self.__bs_busca(bs, tag, 'class', attr_value)             #busquem tots els 'tags' amb 'class' donades  
             for div in divs:                                            #iterem tag x tag
                     link = div.a['href']                                #busquem el link al post
@@ -97,7 +97,7 @@ class Pagina:
         #iterem tots els posts
         for post in posts:
             #creem un '__bs' per cada post
-            bs=self.__bs(self.aconsegueix(post))
+            bs=self.__bs(self._aconsegueix(post))
             
             llista=self.__bs_busca(bs, 'div', 'class', 'inner')         #busquem lelement on hi ha el text del post
             for item in llista:                                         
