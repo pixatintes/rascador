@@ -204,7 +204,7 @@ class Pagina:
             if self.__bs_busca_text(llista, busca):                     #busquem lelement on hi ha el text del post
                 if post not in self.trobat:                             #si no està guardat
                     self.trobat.append(post)                            #l'adjuntem el link del post a la llista
-        
+        self.exp('data/'+self.busqueda+'.obj')
     
                     
 def main(busca,num):
