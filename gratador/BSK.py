@@ -191,18 +191,19 @@ class Pagina:
         '''
         #creem la llista a tornar
         self.busqueda = busca
-        self.posts('td','class', 'subject lockedbg2')                   #busquem tots els posts
-        #iterem tots els posts
+        self.posts('td','class', 'subject lockedbg2')  
+        count=len(self.url_posts)                 #busquem tots els posts        #iterem tots els posts
+        i=0
         for post in self.url_posts:
             #creem un '__bs' per cada post
             bs=self.__bs(self._aconsegueix(post))
-            
+            xcent=str(int((i*100)/count))
+            print(xcent,'%')
+            i= i+1
             llista=self.__bs_busca(bs, 'div', 'class', 'inner')         
             if self.__bs_busca_text(llista, busca):                     #busquem lelement on hi ha el text del post
                 if post not in self.trobat:                             #si no està guardat
-                    self.trobat.append(post)                           #l'adjuntem el link del post a la llista
-                                             
-        self.exp("data/" + self.busqueda + ".obj")
+                    self.trobat.append(post)                            #l'adjuntem el link del post a la llista
         
     
                     
@@ -237,4 +238,4 @@ if __name__ == "__main__":
     
 
 
-
+main('dawn', 1)
