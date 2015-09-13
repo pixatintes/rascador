@@ -1,17 +1,11 @@
 
 __author__ = 'albert'
 
-import urllib.request,sys,pickle,smtplib
+import urllib.request,sys,pickle
 from bs4 import BeautifulSoup
 import easygui as eg                #modul gui cridar i guardar fitxers
 import webbrowser as web            #obre navegador
 from email.mime.text import MIMEText#modul email
-import os
-import smtplib
-from email import encoders
-from email.mime.base import MIMEBase
-from email.mime.multipart import MIMEMultipart
-
 
 class Pagina:
     def __init__(self):
@@ -29,12 +23,6 @@ class Pagina:
         self.busqueda = ""     
         self.trobat= []
         
-
-        
-        for link in self.trobat:
-            print(link)
-        
-    
     def _aconsegueix(self, direccio):
         '''
         _aconsegueix la pagina
@@ -43,20 +31,6 @@ class Pagina:
         with urllib.request.urlopen(direccio) as resposta:              #crida una pagina
             la_pagina = resposta.read()                                 #llegeix la pagina
         return la_pagina                                                #retorna la pagina com a text
-
-    def get_urls(self,num=1, base='http://labsk.net/index.php?board=22.00'):
-        
-        self.pagines=[base]
-        
-        if num > 1:
-            count=0
-            
-            for i in range(num):
-                    count = count + 20
-                    url = 'http://labsk.net/index.php?board=22.' + str(count)
-                    self.pagines.append(url)
-        
-
         
     def __bs(self, url):
         '''
@@ -64,7 +38,6 @@ class Pagina:
         '''
         bs=BeautifulSoup(url,'html.parser')
         return bs
-    
     
     def __bs_busca(self,bs,tag,attr_key=None, attr_value=None):
         '''
@@ -97,29 +70,28 @@ class Pagina:
                         break                                            #deixem de buscar en el post        
         return coincideix
     
-    
-    def exp(self, nom=None):
+    def exp(self, file=None):
         '''
         exporta
         '''
-        file = eg.filesavebox(msg="Guardar fitxer",
-                              title="exporta fitxer: laBSK")
+        if file ==None:
+            file = eg.filesavebox(msg="Guardar fitxer",
+                                  title="exporta fitxer: laBSK")
         
-        if nom == None:
-            nom = ""+self.busqueda + ".obj"
+        
         with open(file, mode='wb') as f:
             pickle.dump(self,f)
             
-    def imp(self):
+    def imp(self, file=None):
         '''
         importa un objecte 
         '''
         extension = ["*.obj"]
- 
-        file = eg.fileopenbox(msg="Obrir fitxer",
-        title="importa fitxer: laBSK",
-        default='',
-        filetypes=extension)
+        if file ==None:
+            file = eg.fileopenbox(msg="Obrir fitxer",
+                                  title="importa fitxer: laBSK",
+                                  default='',
+                                  filetypes=extension)
         
         with open(file, mode='rb') as f:
             imp=pickle.load(f)
@@ -132,7 +104,7 @@ class Pagina:
         for post in self.trobat:
             web.open_new_tab(post)
             
-    def mail(self, desde=None, a=None):
+    def mail(self, desde=None, a=None, pwd=None):
         '''
         envia un correu electrònic amb els resutats trobats
         '''
@@ -142,7 +114,14 @@ class Pagina:
             sender = eg.textbox(msg="correu del gmail", text="")
         else:
             sender=desde
-        gmail_password = eg.passwordbox(msg="Entra la teva contrasenya", title="Password")
+            
+            
+        if pwd==None:
+            gmail_password = eg.passwordbox(msg="Entra la teva contrasenya", title="Password")
+        else:
+            gmail_password = pwd
+            
+            
         if a == None:
             recipients = eg.textbox(msg="enviar a:", text="")
         else:
@@ -155,11 +134,12 @@ class Pagina:
         for link in self.trobat:
             cos = cos + link +'\n'
         outer=MIMEText(cos)
-        outer['Subject'] = "posts trobats a laBSK de3l joc {} " .format(self.busqueda)
+        outer['Subject'] = "Resultats a laBSK pel joc: {} " .format(self.busqueda)
         outer['To'] = COMMASPACE.join(recipients)
         outer['From'] = sender
         
         composed = outer.as_string()
+    
     
         # Send the email
         try:
@@ -175,7 +155,17 @@ class Pagina:
             print("Unable to send the email. Error: ", sys.exc_info()[0])
             raise
             
-        
+    def get_urls(self,num=1, base='http://labsk.net/index.php?board=22.00'):
+            
+            self.pagines=[base]
+            
+            if num > 1:
+                count=0
+                
+                for i in range(num):
+                        count = count + 20
+                        url = 'http://labsk.net/index.php?board=22.' + str(count)
+                        self.pagines.append(url)
         
     def posts(self, tag='td',attr_key='class', attr_value='subject lockedbg2'):
         '''
@@ -188,10 +178,6 @@ class Pagina:
             for div in divs:                                            #iterem tag x tag
                     link = div.a['href']                                #busquem el link al post
                     self.url_posts.append(link)                                  #guardem el link al la llista de posts
-#                    print(link)        
-    
-
-        
     
     def buscar(self, busca):
         '''
@@ -215,8 +201,11 @@ class Pagina:
                     
 def main(busca,num):
 
-        Pagina(busca,num)
-                    
+        p = Pagina()
+        p.get_urls(num) 
+        p.buscar(busca)
+        p.trobat
+        p.mostra()   
                     
                     
                     
