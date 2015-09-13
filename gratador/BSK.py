@@ -1,7 +1,7 @@
 
 __author__ = 'albert'
 
-import urllib.request,sys,pickle
+import urllib.request,sys,pickle,smtplib
 from bs4 import BeautifulSoup
 import easygui as eg                #modul gui cridar i guardar fitxers
 import webbrowser as web            #obre navegador
@@ -107,11 +107,22 @@ class Pagina:
     def mail(self, desde=None, a=None, pwd=None):
         '''
         envia un correu electrònic amb els resutats trobats
+        1-en cas de no estar declarats emisor i receptor
+        es demanara
+        2-si no s'ha donat la contrasenya 
+        es demanará
         '''
         #configurar el mail
         COMMASPACE = ', '
-        if desde==None:
-            sender = eg.textbox(msg="correu del gmail", text="")
+        if desde==None or a==None:
+            msg = "(nomes es pot enviar desde gmail)"
+            title = "Enviar correu"
+            fieldNames = ["From","To"]
+            fieldValues = [desde,a]  # we start with blanks for the values
+            fieldValues = eg.multenterbox(msg,title, fieldNames,fieldValues)
+            
+            sender = fieldValues[0]
+            recipients = fieldValues[1]
         else:
             sender=desde
             
@@ -121,12 +132,7 @@ class Pagina:
         else:
             gmail_password = pwd
             
-            
-        if a == None:
-            recipients = eg.textbox(msg="enviar a:", text="")
-        else:
-            recipients = a
-            
+
             
         # Create the enclosing (outer) message
         
@@ -196,7 +202,8 @@ class Pagina:
                 if post not in self.trobat:                             #si no està guardat
                     self.trobat.append(post)                           #l'adjuntem el link del post a la llista
                                              
-    
+        self.exp("data/" + self.busqueda + ".obj")
+        
     
                     
 def main(busca,num):
