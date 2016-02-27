@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>489</width>
+    <height>892</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QWidget" name="widget" native="true">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QPushButton" name="bt_add">
+         <property name="text">
+          <string>Afegeix</string>
+         </property>
+         <property name="icon">
+          <iconset resource="png/icones.qrc">
+           <normaloff>:/Videos/round-add-button.png</normaloff>:/Videos/round-add-button.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="bt_remove">
+         <property name="text">
+          <string>Elimina</string>
+         </property>
+         <property name="icon">
+          <iconset resource="png/icones.qrc">
+           <normaloff>:/Videos/delete-button.png</normaloff>:/Videos/delete-button.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>12</width>
+           <height>12</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="text"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="bt_busca">
+         <property name="text">
+          <string>Busca</string>
+         </property>
+         <property name="icon">
+          <iconset resource="png/icones.qrc">
+           <normaloff>:/Videos/eye-close-up.png</normaloff>:/Videos/eye-close-up.png</iconset>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTreeWidget" name="llista">
+      <column>
+       <property name="text">
+        <string notr="true">1</string>
+       </property>
+      </column>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>489</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources>
+  <include location="png/icones.qrc"/>
+ </resources>
+ <connections/>
+</ui>
