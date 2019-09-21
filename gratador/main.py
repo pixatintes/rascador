@@ -6,6 +6,8 @@ from PyQt5.QtWidgets import QApplication
 from grataBSK_5_main_2 import main
 
 
+
+
 if __name__ == "__main__":
 
         total = len(sys.argv)
